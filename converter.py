@@ -6,7 +6,7 @@ class Converter():
     def __init__(self, resizing_scale=0.10):
         """initialised the converter class by setting the neccesary variables"""
 
-        path = r"Image-to-ASCII\images\roop.jpg"
+        path = r"Images\roop.jpg"
         self.reszing_scale = resizing_scale 
         self.reading_img(path)
     
@@ -64,28 +64,28 @@ class Converter():
             file.write(string)
         
         print("Success!!!.. Enjoy the Masterpiece")
-        # print(string)
+        print(string)
         
 
     def saving_image(self,string):
-        new_img = np.zeros((1280,720,3),dtype="uint8")
+        new_img = np.zeros((1025,578,3),dtype="uint8")
         # Make into PIL Image
         pil_img = Image.fromarray(new_img)
 
         # Get a drawing context
         draw = ImageDraw.Draw(pil_img)
-        monospace = ImageFont.truetype("font.ttf",11)
+        monospace = ImageFont.truetype(r"Fonts\font.ttf",6)
 
         increment = 0
-        y_increment = 1
+        y_increment = 0
         
         for i in range(128):
             # cv.putText(new_img,string[0+increment:144+increment],(2,7*(y_increment+5)),cv.FONT_HERSHEY_COMPLEX_SMALL,0.3,(255,255,255),1)
-            draw.text((2,7*(y_increment*2)),string[0+increment:144+increment],(255,255,255),font=monospace)
+            draw.text((2,(7+1)*(y_increment)),string[0+increment:144+increment],(255,255,255),font=monospace)
             increment+=144
             y_increment+=1
         cv.imshow("win",np.array(pil_img))
         cv.waitKey(0)
-        cv.imwrite("out.jpg",np.array(pil_img))
+        cv.imwrite("out.jpg",np.array(pil_img),[int(cv.IMWRITE_JPEG_QUALITY),100])
 
 Converter()
