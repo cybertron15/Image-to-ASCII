@@ -5,8 +5,9 @@ from PIL import Image, ImageFont, ImageDraw
 class Converter():
     def __init__(self, resizing_scale=0.10):
         """initialised the converter class by setting the neccesary variables"""
-
-        path = r"Images\roop.jpg"
+        
+        #path to the image file which you want to convert
+        path = r"Images\ironman.jpg"
         self.reszing_scale = resizing_scale 
         self.reading_img(path)
     
@@ -53,7 +54,7 @@ class Converter():
             string+="\n"
         print("Finished converting...")
         self.writing_to_file(string)
-        self.saving_image(img_string)
+        self.saving_image(img_string,height,width)
     
     
     def writing_to_file(self,string):
@@ -64,28 +65,42 @@ class Converter():
             file.write(string)
         
         print("Success!!!.. Enjoy the Masterpiece")
-        print(string)
+        
         
 
-    def saving_image(self,string):
-        new_img = np.zeros((1025,578,3),dtype="uint8")
+    def saving_image(self,string,height,width):
+
+        #Each letter of Roberto Mono(the font we are using here) of size 6 takes 4 pixels horizontally and we know it takes 8 horizontally
+        #so we just multiply these values with the width and height of the resized image so we have exact size of the image we need
+        #remember this values will only work for Roberto Mono of size 6 for values higher than 6 you need roughly increase 1 digit of pixel values for every 2 digit increace in size value
+        vertical_font_pixels = 9
+        horizontal_font_pixels = 5
+        font_size = 8
+        new_img = np.zeros((vertical_font_pixels*height,horizontal_font_pixels*width*2,3),dtype="uint8")
+
+        #we need monospaced text inorder to achive the final output and opencv doesnt have monospaced fonts so we need to use PIL
         # Make into PIL Image
         pil_img = Image.fromarray(new_img)
 
         # Get a drawing context
         draw = ImageDraw.Draw(pil_img)
-        monospace = ImageFont.truetype(r"Fonts\font.ttf",6)
+
+        #loading font
+        monospace = ImageFont.truetype(r"Fonts\font.ttf",font_size)
 
         increment = 0
         y_increment = 0
         
-        for i in range(128):
-            # cv.putText(new_img,string[0+increment:144+increment],(2,7*(y_increment+5)),cv.FONT_HERSHEY_COMPLEX_SMALL,0.3,(255,255,255),1)
-            draw.text((2,(7+1)*(y_increment)),string[0+increment:144+increment],(255,255,255),font=monospace)
-            increment+=144
+        for i in range(height):
+            #using PIL draw method to write Monospaced text over PIL image
+            #we are using vertical_font_pixels here because its the exact number of vertical pixels our letter takes
+            draw.text((2,vertical_font_pixels*(y_increment)),string[0+increment:(width*2)+increment],(255,255,255),font=monospace)
+            increment+=(width*2)
             y_increment+=1
         cv.imshow("win",np.array(pil_img))
         cv.waitKey(0)
-        cv.imwrite("out.jpg",np.array(pil_img),[int(cv.IMWRITE_JPEG_QUALITY),100])
+
+        #saving the image (third argument is to get the maximum available quality for the image)
+        cv.imwrite("Output/Converted_image.jpg",np.array(pil_img),[int(cv.IMWRITE_JPEG_QUALITY),100])
 
 Converter()
