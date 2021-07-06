@@ -70,7 +70,7 @@ class Converter():
 
     def saving_image(self,string,height,width):
 
-        #Each letter of Roberto Mono(the font we are using here) of size 6 takes 4 pixels horizontally and we know it takes 8 horizontally
+        #Each letter of Roberto Mono(the font we are using here) of size 6 takes 4 pixels horizontally and we know it takes 8 vertically
         #so we just multiply these values with the width and height of the resized image so we have exact size of the image we need
         #remember this values will only work for Roberto Mono of size 6 for values higher than 6 you need roughly increase 1 digit of pixel values for every 2 digit increace in size value
         vertical_font_pixels = 9
@@ -91,16 +91,57 @@ class Converter():
         increment = 0
         y_increment = 0
         
-        for i in range(height):
-            #using PIL draw method to write Monospaced text over PIL image
-            #we are using vertical_font_pixels here because its the exact number of vertical pixels our letter takes
-            draw.text((2,vertical_font_pixels*(y_increment)),string[0+increment:(width*2)+increment],(255,255,255),font=monospace)
-            increment+=(width*2)
-            y_increment+=1
-        cv.imshow("win",np.array(pil_img))
-        cv.waitKey(0)
+        # for i in range(height):
+        #     #using PIL draw method to write Monospaced text over PIL image
+        #     #we are using vertical_font_pixels here because its the exact number of vertical pixels our letter takes
+        #     draw.text((2,vertical_font_pixels*(y_increment)),string[0+increment:(width*2)+increment],(255,255,255),font=monospace)
+        #     increment+=(width*2)
+        #     y_increment+=1
+        # cv.imshow("win",np.array(pil_img))
+        # cv.waitKey(0)
+
+        self.saving_colored_image(width,height,string)
 
         #saving the image (third argument is to get the maximum available quality for the image)
-        cv.imwrite("Output/Converted_image.jpg",np.array(pil_img),[int(cv.IMWRITE_JPEG_QUALITY),100])
+        # cv.imwrite("Output/Converted_image.jpg",np.array(pil_img),[int(cv.IMWRITE_JPEG_QUALITY),100])
+
+    def saving_colored_image(self,width,height,string):
+        ascii = {'@':(0, 12, 140),
+                 '#':(85, 189, 255),
+                 'S':(191, 191, 175),
+                 '%':( 14, 27, 191),
+                 '?':(0, 204, 249),
+                 "*":(0, 204, 249),
+                 ";":(85, 189, 255),
+                 ":":(0, 204, 249),
+                 "-":( 14, 27, 191),
+                 ".":(191, 191, 175),
+                 ".":(0, 12, 140),
+                 }
+        vertical_font_pixels = 9
+        horizontal_font_pixels = 5
+        font_size = 8
+        
+        new_img = np.zeros((vertical_font_pixels*height,horizontal_font_pixels*width*2,3),dtype="uint8")
+
+        #we need monospaced text inorder to achive the final output and opencv doesnt have monospaced fonts so we need to use PIL
+        # Make into PIL Image
+        pil_img = Image.fromarray(new_img)
+
+        # Get a drawing context
+        draw = ImageDraw.Draw(pil_img)
+
+        #loading font
+        monospace = ImageFont.truetype(r"Fonts\font.ttf",font_size)
+        index = 0
+        increment = 0
+        for i in range(height):
+            for j in range(width*2):
+                draw.text((horizontal_font_pixels*j, vertical_font_pixels*i),string[index],ascii[string[index]],font=monospace)
+                index+=1
+                increment+=2
+
+        cv.imshow("win",np.array(pil_img))
+        cv.waitKey(0)
 
 Converter()
