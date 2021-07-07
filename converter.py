@@ -44,7 +44,7 @@ class Converter():
         a ASCII Character based on the pixel's intesity"""
 
         print("Converting to Characters...")
-        ascii = ['@#','#S','S%','%?','??',"**",";;",":-","-.","..",".."]
+        ascii = ['@#','#S','S%','%?','??',"**",";;",":-","-,",",.",",,"]
         string = ""
         img_string = ""
         for i in range(height):
@@ -52,6 +52,7 @@ class Converter():
                 string += ascii[-(grayed_img[i][j])//25]
                 img_string += ascii[-(grayed_img[i][j])//25]
             string+="\n"
+
         print("Finished converting...")
         self.writing_to_file(string)
         self.saving_image(img_string,height,width)
@@ -106,17 +107,18 @@ class Converter():
         # cv.imwrite("Output/Converted_image.jpg",np.array(pil_img),[int(cv.IMWRITE_JPEG_QUALITY),100])
 
     def saving_colored_image(self,width,height,string):
-        ascii = {'@':(0, 12, 140),
-                 '#':(85, 189, 255),
-                 'S':(191, 191, 175),
-                 '%':( 14, 27, 191),
-                 '?':(0, 204, 249),
-                 "*":(0, 204, 249),
-                 ";":(85, 189, 255),
-                 ":":(0, 204, 249),
-                 "-":( 14, 27, 191),
-                 ".":(191, 191, 175),
-                 ".":(0, 12, 140),
+        # '@#','#S','S%','%?','??',"**",";;",":-","-,",",.",".."
+        ascii = {'@#':(191, 191, 175),
+                 '#S':(85, 189, 255),
+                 'S%':(0, 12, 140),
+                 '%?':( 14, 27, 191),
+                 '??':(0, 204, 249),
+                 "**":(0, 204, 249),
+                 ";;":(85, 189, 255),
+                 ":-":(0, 204, 249),
+                 "-,":( 14, 27, 191),
+                 ",.":(191, 191, 175),
+                 ",,":(0, 12, 140),
                  }
         vertical_font_pixels = 9
         horizontal_font_pixels = 5
@@ -135,9 +137,13 @@ class Converter():
         monospace = ImageFont.truetype(r"Fonts\font.ttf",font_size)
         index = 0
         increment = 0
+        p = 2
         for i in range(height):
-            for j in range(width*2):
-                draw.text((horizontal_font_pixels*j, vertical_font_pixels*i),string[index],ascii[string[index]],font=monospace)
+            for j in range(width):
+                color = ascii[string[0+index*p:p+index*2]]
+                letter = string[0+index*p:p+index*2]
+                
+                draw.text((horizontal_font_pixels*2*j, vertical_font_pixels*i),letter,color,font=monospace)
                 index+=1
                 increment+=2
 
